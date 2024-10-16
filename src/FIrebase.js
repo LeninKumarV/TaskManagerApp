@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBGdFJdxjPpK8H2Tmrx1IAVzeUsvx8TAiY",
   authDomain: "taskmanagement-20bd0.firebaseapp.com",
@@ -11,6 +10,5 @@ const firebaseConfig = {
   appId: "1:551048460229:web:1fcfcdb70ea94c091abdac"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth();

@@ -1,36 +1,45 @@
 import React, { useState } from "react";
-import './Login.css';
+import "./Login.css";
 import { Link } from "react-router-dom";
-import {createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../FIrebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../FIrebase";
+import { ref, set } from "firebase/database";
 
 const SingnUp = () => {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [userName, setUserName] = useState();
 
-    const [email,setEmail]=useState();
-    const [password,setPassword]=useState();
-    const [userName,setUserName]=useState();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    const handleSubmit=(e)=>{
-        e.preventDefault();
+    createUserWithEmailAndPassword(auth, email, password, userName)
+      .then((userCredential) => {
+        const user = userCredential.user;
 
-        createUserWithEmailAndPassword(auth, email, password,userName)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            window.alert("successfully");
-            console.log(user);
-        })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            window.alert(errorMessage);
-          });
-    }
+        set(ref(db, "users/" + user.uid), {
+          username: userName,
+          email: email,
+          id:user.uid
+        });
+        window.alert("successfully");
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        window.alert(errorMessage);
+      });
+  };
 
   return (
-    <div className="d-flex align-items-center justify-content-center" style={{height:"90vh"}}>
+    <div
+      className="d-flex align-items-center justify-content-center"
+      style={{ height: "90vh" }}
+    >
       <form>
         <div className="mb-3">
-        <label htmlFor="exampleInputUserName" className="form-label">
+          <label htmlFor="exampleInputUserName" className="form-label">
             UserName
           </label>
           <input
@@ -38,9 +47,9 @@ const SingnUp = () => {
             className="form-control"
             id="exampleInputUserName"
             aria-describedby="emailHelp"
-            onChange={(e)=>setUserName(e.target.value)}
-        />
-          
+            onChange={(e) => setUserName(e.target.value)}
+          />
+
           <label htmlFor="exampleInputEmail1" className="form-label">
             Email address
           </label>
@@ -49,7 +58,7 @@ const SingnUp = () => {
             className="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <div id="emailHelp" className="form-text">
             We'll never share your email with anyone else.
@@ -63,17 +72,23 @@ const SingnUp = () => {
             type="password"
             className="form-control"
             id="exampleInputPassword1"
-            onChange={(e)=>setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
-        <button type="submit" className="btn btn-primary" onClick={(e)=>handleSubmit(e)}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          onClick={(e) => handleSubmit(e)}
+        >
           Submit
         </button>
         <div className="my-3">
           <span>
             Existing User ?
-            <Link to="/login" className="my-3">Please Login</Link>
+            <Link to="/login" className="my-3">
+              Please Login
+            </Link>
           </span>
         </div>
       </form>

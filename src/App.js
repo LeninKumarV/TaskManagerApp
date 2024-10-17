@@ -4,6 +4,7 @@ import Login from './Components/Login';
 import Navbar from './Components/Navbar';
 import SingnUp from './Components/SingnUp';
 import Home from './Components/Home';
+import CreateTask from './Components/CreateTask';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path='/' element={<Home/>}/>
           <Route path='/login' element={<Login/>} />
           <Route path='/signup' element={<SingnUp/>} />
+          <Route path='/createTask' element={<CreateTask/>}/>
         </Routes>
     </div>
   );

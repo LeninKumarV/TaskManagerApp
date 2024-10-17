@@ -21,7 +21,7 @@ const Home = () => {
           <div>
             <Link
               className="btn btn-dark  px-3 py-1 rounded"
-              to="/addTask"
+              to="/createTask"
             //   style={{ backgroundColor: "#333", color: "white",textDecoration:"none" }}
             >
               Add new task +

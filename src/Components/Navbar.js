@@ -10,7 +10,7 @@ const Navbar = () => {
         style={{ width: "100%", position: "fixed", top: "0%",left:"0%",right:"0%" }}
       >
         <div className="container">
-          <a className="navbar-brand">Task Management</a>
+          <Link to="/" className="navbar-brand">Task Management</Link>
           <Link className="btn btn-outline-success" to="/login">
             Login
           </Link>

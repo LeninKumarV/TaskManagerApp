@@ -44,7 +44,7 @@ const Home = () => {
 
   useEffect(() => {
     getTaskData();
-  }, [setTaskData]);
+  }, []);
 
   return (
     <main>

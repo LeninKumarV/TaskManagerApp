@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { db } from "../FIrebase";
 import { child, get, ref, set } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 
 const CreateTask = () => {
+
   const [formData, setFormData] = useState([{
     title:null,
     description:null,
     status:null,
     user:null,
-    deadline:null
+    deadline:null,
   }]);
 
   const [usersLsit, setUsersList] = useState([]);
@@ -37,7 +39,7 @@ const CreateTask = () => {
 
   const handleData=async (e)=>{
     try{
-      const data=await setFormData({...formData,[e.target.name]:e.target.value})
+      const data=await setFormData({id:nanoid(),...formData,[e.target.name]:e.target.value})
     }
     catch(error){
       console.log(error);
@@ -48,7 +50,16 @@ const CreateTask = () => {
     const taskId=uuidv4();
     set(ref(db, "tasks/" + taskId),formData);
     console.log(taskId);
+    setFormData({
+      title:null,
+      description:null,
+      status:null,
+      user:null,
+      deadline:null,
+    })
   }
+
+
   return (
     <div
       className="mt-5 mx-5"
@@ -84,6 +95,7 @@ const CreateTask = () => {
             id="exampleInputDescription1"
             style={{ height: "20vh" }}
             name="description"
+            value={formData.description}
             onChange={(e)=>handleData(e)}
           />
         </div>
@@ -121,7 +133,7 @@ const CreateTask = () => {
               <option>Select User</option>
               {usersLsit.map((m) => {
                 return (
-                  <option value={m.id} key={m.id}>
+                  <option value={m.email} key={m.id}>
                     {m.username} '{m.email}'
                   </option>
                 );

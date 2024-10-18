@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { db } from "../FIrebase";
 import { child, get, ref } from "firebase/database";
 import TaskPage from "./TaskPage";
+import { nanoid } from "nanoid";
 
 const Home = () => {
   const [taskData, setTaskData] = useState([]);
@@ -14,19 +15,22 @@ const Home = () => {
     get(child(ref(db), `tasks`))
       .then((snapshot) => {
         if (snapshot.exists()) {
-          const data = snapshot.val();
+          const data = snapshot.val();         
+          
           setTaskData(Object.values(data));
-
-          const todoData = taskData.filter((f) => f.status === "todo");
-          setTodo(todoData);
-
-          const progressData = taskData.filter(
-            (f) => f.status === "inprogress"
-          );
-          setProgress(progressData);
-
-          const doneData = taskData.filter((f) => f.status === "done");
-          setDone(doneData);
+          
+          if (!done) {
+            const doneData = taskData.filter((f) => f.status === "done");
+            setDone(doneData);
+          }
+          if(!todo){
+            const todoData = taskData.filter((f) => f.status === "todo");
+            setTodo(todoData);
+          }
+          if(!progress){
+            const progressData = taskData.filter((f) => f.status === "inprogress");
+            setProgress(progressData);
+          }
         } else {
           console.log("No data available");
         }
@@ -36,9 +40,11 @@ const Home = () => {
       });
   };
 
+  console.log("home", taskData);
+
   useEffect(() => {
-    getTaskData()
-  }, [taskData]);
+    getTaskData();
+  }, [setTaskData]);
 
   return (
     <main>
@@ -50,11 +56,7 @@ const Home = () => {
           >
             Todo
           </div>
-          <div>
-            {todo
-              && todo.map((m) => <TaskPage key={m} data={m} />)
-            }
-          </div>
+          <div>{todo && todo.map((m) => <TaskPage key={m.id} data={m} />)}</div>
         </div>
         <div className="col-3 mx-3">
           <div
@@ -64,9 +66,7 @@ const Home = () => {
             In Progress
           </div>
           <div>
-            {progress
-              && progress.map((m) => <TaskPage key={m} data={m} />)
-            }
+            {progress && progress.map((m) => <TaskPage key={m.id} data={m} />)}
           </div>
         </div>
         <div className="col-3 mx-3">
@@ -76,11 +76,7 @@ const Home = () => {
           >
             Done
           </div>
-          <div>
-            {done
-              && done.map((m) => <TaskPage key={m} data={m} />)
-            }
-          </div>
+          <div>{done && done.map((m) => <TaskPage key={m.id} data={m} />)}</div>
         </div>
         <div className="col-3 mx-3">
           <div>

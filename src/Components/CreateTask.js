@@ -32,9 +32,8 @@ const CreateTask = () => {
   };
 
   useEffect(() => {
-    getUserData();
-  }, []);
-
+    getUserData()
+  },[]);
 
   const handleData=async (e)=>{
     try{

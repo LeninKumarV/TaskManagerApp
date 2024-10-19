@@ -11,41 +11,49 @@ const Home = () => {
   const [progress, setProgress] = useState([]);
   const [done, setDone] = useState([]);
 
-  const getTaskData = () => {
-    get(child(ref(db), `tasks`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();         
-          
-          setTaskData(Object.values(data));
-          
-          if (!done) {
-            const doneData = taskData.filter((f) => f.status === "done");
-            setDone(doneData);
+  useEffect(() => {
+
+    const getTaskData =async () => {
+     await get(child(ref(db), `tasks`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();                     
+            setTaskData(Object.values(data));
+                   
+          } else {
+            console.log("No data available");
           }
-          if(!todo){
-            const todoData = taskData.filter((f) => f.status === "todo");
-            setTodo(todoData);
-          }
-          if(!progress){
-            const progressData = taskData.filter((f) => f.status === "inprogress");
-            setProgress(progressData);
-          }
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    
+    getTaskData();
+  }, []);
+
+
+  useEffect(()=>{
+    const handleFunc=async()=>{
+      const doneData = taskData.filter((f) => f.status === "done");
+      setDone(doneData);
+
+      const progressData = taskData.filter((f) => f.status === "inprogress");
+      setProgress(progressData);
+
+      const todoData = taskData.filter((f) => f.status === "todo");
+      setTodo(todoData);
+    }
+    handleFunc();
+  },[taskData]);
+
 
   console.log("home", taskData);
-
-  useEffect(() => {
-    getTaskData();
-  }, [setTaskData]);
-
+  console.log("done", done);
+  console.log("progress", progress);
+  console.log("todo", todo);
+  
+  
   return (
     <main>
       <div className="d-flex my-5">

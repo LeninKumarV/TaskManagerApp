@@ -7,75 +7,95 @@ import { nanoid } from "nanoid";
 const ViewUpdateTask = () => {
   const { data } = useParams();
   console.log(data);
-  
+
   const [taskData, setTaskData] = useState([]);
-  const [temp,setTemp]=useState([]);
-
-  const getTaskData = () => {
-    get(child(ref(db), `tasks`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          setTaskData(Object.values(data));
-
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  const [temp, setTemp] = useState([]);
 
   useEffect(() => {
+    const getTaskData = async () => {
+      await get(child(ref(db), `tasks`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            setTaskData(Object.values(data));
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
     getTaskData();
-}, []);
+  }, []);
 
-console.log(taskData);
+  console.log("view", taskData);
 
-useEffect(()=>{
-  handleApi();
-},[setTaskData]);
-  
-  const handleApi=async()=>{
-   const findData=await taskData.find((f)=>f.id===data);
-   setTemp(findData);
-  }
+  useEffect(() => {
+    const hanndleFunc = async () => {
+      const findData = taskData.find((f) => f.id === data);
+      setTemp(findData);
+    };
+    hanndleFunc();
+  }, [taskData]);
 
+  console.log("temp", temp);
 
-const handleData=async (e)=>{
-    try{
-//      const data=await setFormData({id:nanoid(),...formData,[e.target.name]:e.target.value})
-    }
-    catch(error){
+  const handleData = (e) => {
+    try {
+      const data = setTemp({
+        id: nanoid(),
+        ...temp,
+        [e.target.name]: e.target.value,
+      });
+      console.log("ans", temp);
+    } catch (error) {
       console.log(error);
     }
-  }
-
-
-//UserList -section
-  const [usersLsit, setUsersList] = useState([]);
-
-  const getUserData = () => {
-    get(child(ref(db), `users`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          const data = snapshot.val();
-          setUsersList(Object.values(data));
-
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const getTaskData = async () => {
+      await get(child(ref(db), `tasks`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+              update(ref(db,'tasks/'),temp);
+              alert("updated")
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    getTaskData();
+  };
+
+  //UserList -section
+  const [usersLsit, setUsersList] = useState([]);
+
   useEffect(() => {
-    getUserData()
-  },[]);
+    const getUserData = async () => {
+      await get(child(ref(db), `users`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            console.log(snapshot.val());
+            const data = snapshot.val();
+            setUsersList(Object.values(data));
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    getUserData();
+  }, []);
 
   return (
     <div
@@ -98,8 +118,8 @@ const handleData=async (e)=>{
             className="form-control"
             id="exampleInputTitle1"
             name="title"
-            // value={temp.title}
-            onChange={(e)=>handleData(e)}
+            value={temp.title}
+            onChange={(e) => handleData(e)}
           />
         </div>
 
@@ -113,8 +133,8 @@ const handleData=async (e)=>{
             id="exampleInputDescription1"
             style={{ height: "20vh" }}
             name="description"
-            // value={formData.description}
-            onChange={(e)=>handleData(e)}
+            value={temp.description}
+            onChange={(e) => handleData(e)}
           />
         </div>
 
@@ -128,8 +148,8 @@ const handleData=async (e)=>{
               aria-label="Default select example"
               id="status"
               name="status"
-              // value={formData.status}
-              onChange={(e)=>handleData(e)}
+              value={temp.status}
+              onChange={(e) => handleData(e)}
             >
               <option>Select Status</option>
               <option value="todo">Todo</option>
@@ -147,17 +167,17 @@ const handleData=async (e)=>{
               aria-label="Default select example"
               id="status"
               name="user"
-              // value={formData.user}
-              onChange={(e)=>handleData(e)}
+              value={temp.user}
+              onChange={(e) => handleData(e)}
             >
               <option>Select User</option>
               {usersLsit.map((m) => {
-              return (
-                <option value={m.email} key={m.id}>
-                  {m.username} '{m.email}'
-                </option>
-              );
-            })}
+                return (
+                  <option value={m.email} key={m.id}>
+                    {m.username} '{m.email}'
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -170,13 +190,17 @@ const handleData=async (e)=>{
               className="form-control"
               name="deadline"
               id="deadline"
-              // value={formData.deadline}
-              onChange={(e)=>handleData(e)}
+              value={temp.deadline}
+              onChange={(e) => handleData(e)}
             />
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="btn btn-primary"
+          onClick={(e) => handleSubmit(e)}
+        >
           Submit
         </button>
       </form>

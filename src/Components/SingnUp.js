@@ -22,7 +22,7 @@ const SingnUp = () => {
           email: email,
           id:user.uid
         });
-        window.alert("successfully");
+        window.alert("Welcome to the Family!");
         console.log(user);
       })
       .catch((error) => {
@@ -37,7 +37,7 @@ const SingnUp = () => {
       className="d-flex align-items-center justify-content-center"
       style={{ height: "90vh" }}
     >
-      <form>
+      <form style={{border:"1px solid grey",borderRadius:"10%"}} className="px-5 py-4">
         <div className="mb-3">
           <label htmlFor="exampleInputUserName" className="form-label">
             UserName

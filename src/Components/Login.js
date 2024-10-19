@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../FIrebase";
 
 const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const navigate=useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        alert("Logged")
+        alert("Successfully Logged")
+        navigate("/");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -28,7 +30,7 @@ const Login = () => {
       className="d-flex align-items-center justify-content-center"
       style={{ height: "90vh" }}
     >
-      <form>
+      <form style={{border:"1px solid grey",borderRadius:"10%"}} className="px-4 py-4">
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Email address

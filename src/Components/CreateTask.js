@@ -3,8 +3,11 @@ import { db } from "../FIrebase";
 import { child, get, ref, set } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
 import { nanoid } from "nanoid";
+import { useNavigate } from "react-router-dom";
 
 const CreateTask = () => {
+
+  const navigate=useNavigate();
 
   const [formData, setFormData] = useState([{
     title:null,
@@ -15,6 +18,9 @@ const CreateTask = () => {
   }]);
 
   const [usersLsit, setUsersList] = useState([]);
+  const [taskId,setTaskId]=useState(nanoid());
+  console.log("new id",taskId); 
+
 
   const getUserData = () => {
     get(child(ref(db), `users`))
@@ -39,7 +45,7 @@ const CreateTask = () => {
 
   const handleData=async (e)=>{
     try{
-      const data=await setFormData({id:nanoid(),...formData,[e.target.name]:e.target.value})
+      const data=await setFormData({id:taskId,...formData,[e.target.name]:e.target.value})
     }
     catch(error){
       console.log(error);
@@ -47,9 +53,11 @@ const CreateTask = () => {
   }
   const handleSubmit=(e)=>{
     e.preventDefault();
-    const taskId=uuidv4();
     set(ref(db, "tasks/" + taskId),formData);
     console.log(taskId);
+    alert("Successfully Added");
+    navigate("/");
+    
     setFormData({
       title:null,
       description:null,

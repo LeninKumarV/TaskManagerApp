@@ -1,12 +1,12 @@
-import { child, get, ref, update } from "firebase/database";
+import { child, get, ref, remove, update } from "firebase/database";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../FIrebase";
 import { nanoid } from "nanoid";
 
 const ViewUpdateTask = () => {
   const { data } = useParams();
-  console.log(data);
+  const navigate=useNavigate();
 
   const [taskData, setTaskData] = useState([]);
   const [temp, setTemp] = useState([]);
@@ -34,8 +34,12 @@ const ViewUpdateTask = () => {
 
   useEffect(() => {
     const hanndleFunc = async () => {
-      const findData = taskData.find((f) => f.id === data);
-      setTemp(findData);
+      try {
+        const findData = taskData.find((f) => f.id === data);
+        setTemp(findData);
+      } catch (error) {
+        console.log(error);
+      }
     };
     hanndleFunc();
   }, [taskData]);
@@ -58,11 +62,12 @@ const ViewUpdateTask = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const getTaskData = async () => {
-      await get(child(ref(db), `tasks`))
+      await get(child(ref(db), `tasks/` + data))
         .then((snapshot) => {
           if (snapshot.exists()) {
-              update(ref(db,'tasks/'),temp);
-              alert("updated")
+            update(ref(db, "tasks/" + data), temp);
+            alert("Successfully Updated");
+            navigate("/");
           } else {
             console.log("No data available");
           }
@@ -73,6 +78,31 @@ const ViewUpdateTask = () => {
     };
     getTaskData();
   };
+
+
+  const handleDelete=(e)=>{
+    e.preventDefault();
+  
+    const getTaskData = async () => {
+      await get(child(ref(db), `tasks/` + data))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            remove(ref(db, "tasks/" + data));
+            alert("Successfully Deleted!");
+            navigate("/");
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    getTaskData();
+  
+  }
+
+
 
   //UserList -section
   const [usersLsit, setUsersList] = useState([]);
@@ -97,6 +127,7 @@ const ViewUpdateTask = () => {
     getUserData();
   }, []);
 
+
   return (
     <div
       className="mt-5 mx-5"
@@ -107,7 +138,7 @@ const ViewUpdateTask = () => {
         flexDirection: "column",
       }}
     >
-      <h2>Add Task</h2>
+      <h2>View Task</h2>
       <form>
         <div className="mb-3">
           <label htmlFor="exampleInputTitle1" className="form-label">
@@ -118,7 +149,7 @@ const ViewUpdateTask = () => {
             className="form-control"
             id="exampleInputTitle1"
             name="title"
-            value={temp.title}
+            value={temp && temp.title}
             onChange={(e) => handleData(e)}
           />
         </div>
@@ -133,7 +164,7 @@ const ViewUpdateTask = () => {
             id="exampleInputDescription1"
             style={{ height: "20vh" }}
             name="description"
-            value={temp.description}
+            value={temp && temp.description}
             onChange={(e) => handleData(e)}
           />
         </div>
@@ -148,7 +179,7 @@ const ViewUpdateTask = () => {
               aria-label="Default select example"
               id="status"
               name="status"
-              value={temp.status}
+              value={temp && temp.status}
               onChange={(e) => handleData(e)}
             >
               <option>Select Status</option>
@@ -167,7 +198,7 @@ const ViewUpdateTask = () => {
               aria-label="Default select example"
               id="status"
               name="user"
-              value={temp.user}
+              value={temp && temp.user}
               onChange={(e) => handleData(e)}
             >
               <option>Select User</option>
@@ -190,7 +221,7 @@ const ViewUpdateTask = () => {
               className="form-control"
               name="deadline"
               id="deadline"
-              value={temp.deadline}
+              value={temp && temp.deadline}
               onChange={(e) => handleData(e)}
             />
           </div>
@@ -198,10 +229,19 @@ const ViewUpdateTask = () => {
 
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn btn-primary mx-3"
           onClick={(e) => handleSubmit(e)}
         >
-          Submit
+          Update
+        </button>
+
+        <button
+          type="submit"
+          className="btn btn-warning mx-3"
+          style={{color:"white"}}
+          onClick={(e) => handleDelete(e)}
+        >
+          Delete
         </button>
       </form>
     </div>

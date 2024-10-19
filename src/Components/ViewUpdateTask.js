@@ -237,7 +237,7 @@ const ViewUpdateTask = () => {
 
         <button
           type="submit"
-          className="btn btn-warning mx-3"
+          className="btn btn-danger mx-3"
           style={{color:"white"}}
           onClick={(e) => handleDelete(e)}
         >
